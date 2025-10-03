@@ -1,0 +1,7 @@
+# Stores the Start and End Time of the script
+# Log file path 
+# Contains connection strings to the database
+# Contains references to api keys for yahoo finance, alpaca paper trading portfolio
+# Potential Toggles to trade all tickers, or focus on a select few that are defined
+# The max amount you want to allocate for a trade buy,
+# Maybe percentage rules for when you should buy, sell, or hold 
