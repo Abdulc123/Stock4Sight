@@ -33,7 +33,7 @@ class NewsAccessor:
         
         return {normalize(k) : v for k,v in data.items()}
 
-    def GetNewsArticles(self, url = "https://newsapi.org/v2/everything") -> None:
+    def GetNewsArticles(self, url = "https://newsapi.org/v2/everything") -> List[Article]:
         params = self.loadParams()
         response = requests.get(url, params)
 
@@ -47,11 +47,12 @@ class NewsAccessor:
             title = article['title']
             description = article['description']
             organizations = self.getOrganizationsFromArticle(title, description)
-            tickers = {self.getTickerFromOrganization(org) for org in organizations}
+            tickers = {t for org in organizations if (t := self.getTickerFromOrganization(org)) is not None}
             article = Article(title, description, tickers)
-            if tickers: 
+            if len(tickers) > 0: 
                 self.news_articles.append(article) 
-        print(self.news_articles)
+
+        return self.news_articles
 
     def getOrganizationsFromArticle(self, title: str, description: str) -> List[str]:
         text = f"{title}  {description or ''}"
