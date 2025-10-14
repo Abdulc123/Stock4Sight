@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Stock4Sight Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Main/main.py",
+            "console": "integratedTerminal",
+            "python": "C:/Users/abdul/anaconda3/envs/stock4sight/python.exe"
+        }
+    ]
+}
