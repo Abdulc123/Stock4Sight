@@ -1,6 +1,5 @@
 import json
 
-
 def main():
     with open("stock_dict.json", "r") as file:
         data = json.load(file)

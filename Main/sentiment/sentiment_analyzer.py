@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from news.article import Article
+from sentiment.ticker_sentiment import TickerSentiment
 import torch
 
 # Finbert model for financial sentiment 
@@ -11,6 +12,7 @@ sentiment_to_value = {
     "neutral" : 0,
     "negative" : -1
 }
+
 class SentimentAnalyzer:
     # positive = investors would favor this news (possible buy)
     # neutral =  no significant market shift (hold)
@@ -34,4 +36,20 @@ class SentimentAnalyzer:
         article.sentiment = sentiment["label"]
         article.confidence = sentiment["confidence"]
         article.score = sentiment_to_value[article.sentiment] * article.confidence
+    
+    def GetTickerAverageSentimentScore(news_articles: list[Article]) -> dict[TickerSentiment]:
+        ticker_sentiments = {} 
+        for article in news_articles:
+            for ticker in article.tickers:
+                if ticker not in ticker_sentiments:
+                    ticker_sentiments[ticker] = TickerSentiment(ticker)
+
+                ticker_sentiments[ticker].AddArticle(article)
+        
+        for sentiment in ticker_sentiments.values():
+            sentiment.CalculateAvgScore()
+                    
+        return ticker_sentiments
+
+
 
