@@ -6,7 +6,7 @@
     # Read articles from NEWSAPI website, (Done)
         # Store the ticker and heading title (Done)
         # Feed to Finbert for a buy\sell\hold confidence number (Done)
-    # Calculate the average confidence for a given stock based on multiple articles
+    # Calculate the average confidence for a given stock based on multiple articles (Done)
     # Use confidence number and config thresholds to determine the action and how much money to put in or sell
     # Call alpaca paper trading api and put in the request
 
@@ -16,6 +16,7 @@ from news.news_accessor import NewsAccessor
 from sentiment.sentiment_analyzer import SentimentAnalyzer
 from static.company_ticker_map import CompanyTickerMap
 from sentiment.ticker_sentiment import TickerSentiment
+from utils.database_manager import DatabaseManager
 
 
 class Stock4Sight:
@@ -32,13 +33,14 @@ class Stock4Sight:
     def analyzeArticles(self):
         for article in self.news_articles:
             SentimentAnalyzer.Analyze(article)
+            DatabaseManager.StoreNewsSentiment(article)
             article.OutputSentiment()
 
     def outputTickerAvgSentiment(self):   
         # Get the list of ticker sentiments for all of them         
-        ticker_sentiments = SentimentAnalyzer.GetTickerAverageSentimentScore(self.news_articles)
-        for t_sentiment in ticker_sentiments.values():
-            print(t_sentiment)
+        ticker_sentiments_pq = SentimentAnalyzer.GetTickerAverageSentimentScore(self.news_articles)
+        while not ticker_sentiments_pq.empty():
+            print(ticker_sentiments_pq.get()[1]) # (priority, TickerSentiment)
 
 def main():
     stock4Sight = Stock4Sight()

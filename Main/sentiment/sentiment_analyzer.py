@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from news.article import Article
 from sentiment.ticker_sentiment import TickerSentiment
+from queue import PriorityQueue
 import torch
 
 # Finbert model for financial sentiment 
@@ -37,8 +38,9 @@ class SentimentAnalyzer:
         article.confidence = sentiment["confidence"]
         article.score = sentiment_to_value[article.sentiment] * article.confidence
     
-    def GetTickerAverageSentimentScore(news_articles: list[Article]) -> dict[TickerSentiment]:
+    def GetTickerAverageSentimentScore(news_articles: list[Article]) -> PriorityQueue:
         ticker_sentiments = {} 
+        pq = PriorityQueue()
         for article in news_articles:
             for ticker in article.tickers:
                 if ticker not in ticker_sentiments:
@@ -48,8 +50,9 @@ class SentimentAnalyzer:
         
         for sentiment in ticker_sentiments.values():
             sentiment.CalculateAvgScore()
+            pq.put((-sentiment.avg_sentiment_score, sentiment))
                     
-        return ticker_sentiments
+        return pq
 
 
 

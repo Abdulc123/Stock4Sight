@@ -24,6 +24,8 @@ class TickerSentiment:
 
     def __str__(self):
         return f"Ticker = {self.symbol:<10}  | Company = {self.company_name:<45} |  Score = {self.avg_sentiment_score:>5.2f}"
-
+    
+    def __lt__(self, other):
+        return self.avg_sentiment_score <= other.avg_sentiment_score 
 
 
