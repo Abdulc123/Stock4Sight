@@ -18,29 +18,53 @@ from static.company_ticker_map import CompanyTickerMap
 from sentiment.ticker_sentiment import TickerSentiment
 from utils.database_manager import DatabaseManager
 
+from trading.strategies.paper_trading_strategy import PaperTradingStrategy
+from trading.strategies.live_trading_strategy import LiveTradingStrategy
+from trading.trade_executor import TradeExecutor
+
 
 class Stock4Sight:
-    def __init__(self):
+    def __init__(self, trading_mode="paper"):
         self.news_articles = None
-        self.news_accessor = NewsAccessor()
+        self.trade_executor = self.setTradingStrategy(trading_mode)
         CompanyTickerMap.loadMaps()
 
     def start(self):
-        self.news_articles = self.news_accessor.GetNewsArticles()
+        news_accessor = NewsAccessor()
+        self.news_articles = news_accessor.GetNewsArticles()
         self.analyzeArticles()
-        self.outputTickerAvgSentiment()
+        # self.outputTickerAvgSentiment()
+        self.trade()
     
     def analyzeArticles(self):
         for article in self.news_articles:
             SentimentAnalyzer.Analyze(article)
             DatabaseManager.StoreNewsSentiment(article)
-            article.OutputSentiment()
+            # article.OutputSentiment()
 
     def outputTickerAvgSentiment(self):   
         # Get the list of ticker sentiments for all of them         
         ticker_sentiments_pq = SentimentAnalyzer.GetTickerAverageSentimentScore(self.news_articles)
         while not ticker_sentiments_pq.empty():
             print(ticker_sentiments_pq.get()[1]) # (priority, TickerSentiment)
+    
+    def trade(self):
+        self.trade_executor.Trade("APPLE", "BUY", 1000)
+
+    def setTradingStrategy(self, trading_mode: str) -> TradeExecutor:
+        strategy = None
+        match trading_mode:
+            case "paper":
+                strategy = PaperTradingStrategy()
+            case "live":
+                strategy = LiveTradingStrategy()
+            case _:
+                print("Invalid Trading Mode: Please enter a valid trading strategy")
+                return
+            
+        return TradeExecutor(strategy)
+
+
 
 def main():
     stock4Sight = Stock4Sight()
