@@ -33,8 +33,7 @@ class Stock4Sight:
         news_accessor = NewsAccessor()
         self.news_articles = news_accessor.GetNewsArticles()
         self.analyzeArticles()
-        # self.outputTickerAvgSentiment()
-        self.trade()
+        self.executeTrades()
     
     def analyzeArticles(self):
         for article in self.news_articles:
@@ -48,8 +47,11 @@ class Stock4Sight:
         while not ticker_sentiments_pq.empty():
             print(ticker_sentiments_pq.get()[1]) # (priority, TickerSentiment)
     
-    def trade(self):
-        self.trade_executor.Trade("APPLE", "BUY", 1000)
+    def executeTrades(self):
+        ticker_sentiments_pq = SentimentAnalyzer.GetTickerAverageSentimentScore(self.news_articles)
+        while not ticker_sentiments_pq.empty():
+            ticker_sentiment = ticker_sentiments_pq.get()[1]
+            self.trade_executor.Trade(ticker_sentiment)
 
     def setTradingStrategy(self, trading_mode: str) -> TradeExecutor:
         strategy = None
@@ -63,8 +65,6 @@ class Stock4Sight:
                 return
             
         return TradeExecutor(strategy)
-
-
 
 def main():
     stock4Sight = Stock4Sight()

@@ -1,8 +1,9 @@
 from trading.strategies.trading_strategy import TradingStrategy
+from sentiment.ticker_sentiment import TickerSentiment
 
 class TradeExecutor:
     def __init__(self, strategy: TradingStrategy):
         self.trading_strategy = strategy
     
-    def Trade(self, ticker, action, amount):
-        self.trading_strategy.ExecuteTrade(ticker, action, amount)
+    def Trade(self, tickerSentiment: TickerSentiment):
+        self.trading_strategy.ExecuteTrade(tickerSentiment)
