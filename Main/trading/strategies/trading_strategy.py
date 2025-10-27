@@ -8,5 +8,5 @@ class TradingStrategy(ABC):
         pass
 
     @abstractmethod
-    def GetPositions(self):
+    def ReviewPositions(self):
         pass

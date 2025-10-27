@@ -7,8 +7,8 @@
         # Store the ticker and heading title (Done)
         # Feed to Finbert for a buy\sell\hold confidence number (Done)
     # Calculate the average confidence for a given stock based on multiple articles (Done)
-    # Use confidence number and config thresholds to determine the action and how much money to put in or sell
-    # Call alpaca paper trading api and put in the request
+    # Use confidence number and config thresholds to determine the action and how much money to put in or sell (Done)
+    # Call alpaca paper trading api and put in the request (Done)
 
 # End based on end time
 
@@ -28,12 +28,14 @@ class Stock4Sight:
         self.news_articles = None
         self.trade_executor = self.setTradingStrategy(trading_mode)
         CompanyTickerMap.loadMaps()
-
+    
     def start(self):
+        self.reviewPositions()
+
         news_accessor = NewsAccessor()
-        self.news_articles = news_accessor.GetNewsArticles()
-        self.analyzeArticles()
-        self.executeTrades()
+        # self.news_articles = news_accessor.GetNewsArticles()
+        # self.analyzeArticles()
+        # self.executeTrades()
     
     def analyzeArticles(self):
         for article in self.news_articles:
@@ -52,6 +54,9 @@ class Stock4Sight:
         while not ticker_sentiments_pq.empty():
             ticker_sentiment = ticker_sentiments_pq.get()[1]
             self.trade_executor.Trade(ticker_sentiment)
+    
+    def reviewPositions(self):
+        self.trade_executor.ReviewPositions()
 
     def setTradingStrategy(self, trading_mode: str) -> TradeExecutor:
         strategy = None

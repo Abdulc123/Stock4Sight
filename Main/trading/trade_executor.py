@@ -7,3 +7,6 @@ class TradeExecutor:
     
     def Trade(self, tickerSentiment: TickerSentiment):
         self.trading_strategy.ExecuteTrade(tickerSentiment)
+    
+    def ReviewPositions(self):
+        self.trading_strategy.ReviewPositions()
